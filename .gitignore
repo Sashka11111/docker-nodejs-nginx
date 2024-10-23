@@ -28,10 +28,6 @@ coverage/
 # dotenv environment variables file
 .env
 
-# Docker files
-docker-compose.yml
-Dockerfile
-
 # IDE files
 .vscode/
 .idea/
