@@ -5,12 +5,45 @@ services:
       dockerfile: Dockerfile
     networks:
       - app-network
+      - app-mongo-network
+      - app-postgres-network
     ports:
-      - "9229:9229" # Debugger port
+      - ${DEV_APP_PORT:-} # Debugger port
     volumes:
       - .:/srv/node/app # Mount local directory to container
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
+      - APP_HOST=${APP_HOST:-0.0.0.0}
+      - APP_PORT=${APP_PORT:-3000}
+      - REBUILD_PRISMA_CLIENT=${REBUILD_PRISMA_CLIENT:-}
+      - APP_PG_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${APP_PG_PORT:-5432}/${POSTGRES_DB}?schema=public - APP_MONGO_DATABASE_URL=mongodb://mongo:${APP_MONGO_PORT:-27017}/${MONGO_DB}
+    depends_on:
+      - postgres
+      - mongo
+
+  postgres:
+    image: postgres:latest
+    networks:
+      - app-postgres-network
+    ports:
+      #   - "5432:5432"    # PostgreSQL port
+      - ${DEV_POSTGRES_PORT:-}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+  mongo:
+    image: mongo:latest
+    networks:
+      - app-mongo-network
+    ports:
+      #   - "27017:27017"  # MongoDB port
+      - ${DEV_MONGO_PORT:-}
+    volumes:
+      - mongo-data:/data/db
 
   nginx:
     image: nginx:alpine
@@ -28,3 +61,13 @@ services:
 networks:
   app-network:
     driver: bridge
+
+  app-mongo-network:
+    driver: bridge
+
+  app-postgres-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  mongo-data:
