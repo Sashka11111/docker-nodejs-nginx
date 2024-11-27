@@ -1,40 +1,33 @@
 const autocannon = require('autocannon');
 
-// Configurations for each load test
+// Конфігурації для кожного тесту навантаження
 const testConfigs = [
   {
-    name: 'Login Test',
-    url: 'https://localhost/api/auth/sign-in',
-    method: 'POST',
-    payload: { username: 'testuser', password: 'password123' },
-    connections: 100,
-    duration: 30,
-  },
-  {
-    name: 'Registration Test',
-    url: 'https://localhost/api/auth/sign-up',
-    method: 'POST',
-    payload: { username: 'newuser', password: 'password123' },
-    connections: 100,
-    duration: 30,
-  },
-  {
-    name: 'Protected Route Test',
-    url: 'https://localhost/api/auth/log-out',
-    method: 'POST',
-    connections: 100,
-    duration: 30,
-  },
-  {
-    name: 'Static Route Test',
-    url: 'https://localhost/index.html',
+    name: 'GET All Products Test',
+    url: 'https://localhost/api/products',
     method: 'GET',
+    connections: 100,
+    duration: 30,
+  },
+  {
+    name: 'POST Create Product Test',
+    url: 'https://localhost/api/products',
+    method: 'POST',
+    payload: { name: 'New Product', price: 99.99 },
     connections: 50,
-    duration: 15,
+    duration: 30,
+  },
+  {
+    name: 'PUT Update Product Test',
+    url: 'https://localhost/api/products/1', // Оновлення товару з id=1
+    method: 'PUT',
+    payload: { name: 'Updated Product', price: 79.99 },
+    connections: 50,
+    duration: 30,
   },
 ];
 
-// Function to format and log results
+// Функція для форматування та виведення результатів
 function logSummary(name, result) {
   const summary = `
   📊 Load Test Summary for ${name}:
@@ -59,7 +52,7 @@ function logSummary(name, result) {
   console.log(summary);
 }
 
-// Function to run a load test based on the configuration
+// Функція для запуску тесту навантаження на основі конфігурації
 function runTest(config) {
   const testConfig = {
     url: config.url,
@@ -83,7 +76,7 @@ function runTest(config) {
   });
 }
 
-// Function to iterate over all test configurations and run them
+// Функція для запуску всіх тестів навантаження
 function runLoadTests() {
   console.log('🚀 Initiating all load tests...');
   for (const config of testConfigs) {
